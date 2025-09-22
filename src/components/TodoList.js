@@ -6,12 +6,12 @@ function TodoList({ todos, toggleTodo, deleteTodo }) {
     <ul>
       {todos.map((todo) => (
         <TodoItem
-          key={todo.id}
+          key={todo._id}
           todo={todo}
           toggleTodo={toggleTodo}
           deleteTodo={deleteTodo}
         />
-      ))}
+     ))} 
     </ul>
   );
 }

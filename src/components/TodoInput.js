@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+
+import { AuthContext } from "../context/AuthContext";
 
 const styles = {
   form: {
@@ -37,17 +39,24 @@ const styles = {
 };
 
 function TodoInput({ addTodo }) {
+    const { user , logout} = useContext(AuthContext);
   const [value, setValue] = useState("");
   const [focus, setFocus] = useState(false);
   const [hover, setHover] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (value.trim()) {
-      addTodo(value.trim());
-      setValue("");
-    }
-  };
+
+  console.log(user?._id, "userId from appjs");
+
+
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  if (value.trim()) {
+ addTodo({ text: value.trim(), id: user?._id });
+
+    setValue("");
+  }
+};
+
 
   return (
     <form style={styles.form} onSubmit={handleSubmit}>

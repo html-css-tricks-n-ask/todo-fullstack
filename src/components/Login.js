@@ -78,6 +78,8 @@ function Login() {
     try {
       const { data } = await loginUser(form);
       login(data);
+
+
       navigate("/");
     } catch (err) {
       alert("Login failed!");
@@ -125,3 +127,8 @@ function Login() {
 }
 
 export default Login;
+
+
+
+
+

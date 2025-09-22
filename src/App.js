@@ -10,64 +10,122 @@ import { AuthContext } from "./context/AuthContext";
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "#f4f6f8",
+    background: "#f0f2f5", // softer, modern background
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    padding: "16px",
   },
   card: {
     background: "#fff",
-    borderRadius: 12,
-    boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-    padding: "36px 28px",
+    borderRadius: 20, // smoother corners
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.08)", // softer, deeper shadow
+    padding: "36px 32px",
     width: "100%",
-    maxWidth: 420,
-    minHeight: 480,
+    maxWidth: 450, // slightly wider
+    minHeight: 500,
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
+    transition: "all 0.3s ease",
   },
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 28,
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 700,
-    color: "#222",
-    letterSpacing: 1,
+    color: "#111",
+    letterSpacing: 1.2,
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   logoutBtn: {
     background: "#e74c3c",
     color: "#fff",
     border: "none",
-    padding: "8px 18px",
-    borderRadius: 6,
-    fontWeight: 500,
+    padding: "10px 20px",
+    borderRadius: 10,
+    fontWeight: 600,
     fontSize: 16,
     cursor: "pointer",
-    transition: "background 0.2s",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+    transition: "all 0.3s ease",
   },
   logoutBtnHover: {
     background: "#c0392b",
+    transform: "scale(1.05)", // subtle hover scale
+    boxShadow: "0 6px 16px rgba(0,0,0,0.16)",
+  },
+  todoListContainer: {
+    marginTop: 20,
+    maxHeight: "50vh",
+    overflowY: "auto",
+  },
+  inputContainer: {
+    display: "flex",
+    marginBottom: 16,
+  },
+  input: {
+    flex: 1,
+    padding: "10px 14px",
+    borderRadius: 8,
+    border: "1px solid #ccc",
+    fontSize: 16,
+    outline: "none",
+    marginRight: 8,
+    transition: "all 0.2s ease",
+  },
+  inputFocus: {
+    border: "1px solid #007bff",
+    boxShadow: "0 0 6px rgba(0,123,255,0.3)",
+  },
+  addBtn: {
+    background: "#007bff",
+    color: "#fff",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: 8,
+    fontSize: 16,
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+  },
+  addBtnHover: {
+    background: "#0056b3",
+    transform: "scale(1.05)",
+  },
+  // Responsive tweaks
+  cardMobile: {
+    padding: "24px 16px",
+    maxWidth: "95%",
+  },
+  titleMobile: {
+    fontSize: 24,
   },
 };
+
 
 function App() {
   const { user, logout } = useContext(AuthContext);
   const [todos, setTodos] = useState([]);
   const [logoutHover, setLogoutHover] = useState(false);
 
+
+  // console.log(user?.user?.id , "user")
+
+
   useEffect(() => {
-    if (user) fetchTodos();
+    if (user?._id) fetchTodos();
     // eslint-disable-next-line
-  }, [user]);
+  }, [user?._id]);
+
 
   const fetchTodos = async () => {
     try {
-      const { data } = await getTodos();
+      const { data } = await getTodos(user?._id);
       setTodos(data);
     } catch (error) {
       console.error("Error fetching todos", error);
@@ -75,18 +133,18 @@ function App() {
   };
 
   const handleAddTodo = async (text) => {
-    await addTodo(text);
-    fetchTodos();
+    await addTodo(text , user?.id);
+    fetchTodos(user?.id);
   };
 
   const handleToggleTodo = async (id) => {
     await toggleTodo(id);
-    fetchTodos();
+    fetchTodos(user?.user?.id);
   };
 
   const handleDeleteTodo = async (id) => {
     await deleteTodo(id);
-    fetchTodos();
+    fetchTodos(user?.user?.id);
   };
 
   return (
