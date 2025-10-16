@@ -133,7 +133,6 @@ function Login() {
     (window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/google`)
   }
           
-            // onClick={() => (window.location.href = "http://localhost:5000/auth/google")}
             style={googleHover ? { ...styles.googleButton, ...styles.googleButtonHover } : styles.googleButton}
             onMouseEnter={() => setGoogleHover(true)}
             onMouseLeave={() => setGoogleHover(false)}
