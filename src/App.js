@@ -1,11 +1,19 @@
 import React, { useContext, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { getTodos, addTodo, toggleTodo, deleteTodo } from "./api";
 import { AuthContext } from "./context/AuthContext";
+import { useLocation } from "react-router-dom";
+
+import Profile from "./components/Profile";
 
 const styles = {
   container: {
@@ -107,21 +115,33 @@ const styles = {
   },
 };
 
-
 function App() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, login, logout } = useContext(AuthContext);
   const [todos, setTodos] = useState([]);
   const [logoutHover, setLogoutHover] = useState(false);
-
-
   // console.log(user?.user?.id , "user")
+  const location = useLocation(); // <-- Add this line
+
+  // ...existing code...
+ useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  const id = params.get("id");
+  const name = params.get("name");
+  const email = params.get("email");
+
+  // Only login if user is not already set
+  if (token && id && name && email && !user) {
+    login({ _id: id, name, email, token });
+    window.history.replaceState({}, document.title, "/");
+  }
+}, [location.search, login, user]);
 
 
   useEffect(() => {
     if (user?._id) fetchTodos();
     // eslint-disable-next-line
   }, [user?._id]);
-
 
   const fetchTodos = async () => {
     try {
@@ -133,7 +153,7 @@ function App() {
   };
 
   const handleAddTodo = async (text) => {
-    await addTodo(text , user?.id);
+    await addTodo(text, user?.id);
     fetchTodos(user?.id);
   };
 
@@ -148,26 +168,30 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            user ? (
-              <div style={styles.container}>
-                <div style={styles.card}>
-                  <div style={styles.header}>
-                    <span style={styles.title}>Todo Application</span>
-                    <button
-                      style={logoutHover ? { ...styles.logoutBtn, ...styles.logoutBtnHover } : styles.logoutBtn}
-                      onClick={logout}
-                      onMouseEnter={() => setLogoutHover(true)}
-                      onMouseLeave={() => setLogoutHover(false)}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                  <TodoInput addTodo={handleAddTodo} />
+    <Routes>
+      <Route
+        path="/"
+        element={
+          user ? (
+            <div style={styles.container}>
+              <div style={styles.card}>
+                <div style={styles.header}>
+                  <span style={styles.title}>Todo App</span>
+                  <button
+                    style={
+                      logoutHover
+                        ? { ...styles.logoutBtn, ...styles.logoutBtnHover }
+                        : styles.logoutBtn
+                    }
+                    onClick={logout}
+                    onMouseEnter={() => setLogoutHover(true)}
+                    onMouseLeave={() => setLogoutHover(false)}
+                  >
+                    Logout
+                  </button>
+                </div>
+                <TodoInput addTodo={handleAddTodo} />
+                <div style={styles.todoListContainer}>
                   <TodoList
                     todos={todos}
                     toggleTodo={handleToggleTodo}
@@ -175,15 +199,18 @@ function App() {
                   />
                 </div>
               </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </Router>
+            </div>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/profile" element={<Profile />} />
+
+      <Route path="/signup" element={<Signup />} />
+    </Routes>
   );
 }
 

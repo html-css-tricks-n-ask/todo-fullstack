@@ -65,6 +65,19 @@ const styles = {
     fontSize: "1rem",
     color: "#555",
   },
+  googleButton: {
+    padding: 12,
+    background: "#db4437",
+    color: "#fff",
+    border: "none",
+    borderRadius: 5,
+    cursor: "pointer",
+    marginTop: 12,
+    transition: "background 0.2s",
+  },
+  googleButtonHover: {
+    background: "#c33d2e",
+  },
 };
 
 function Login() {
@@ -72,16 +85,16 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
+  const [googleHover, setGoogleHover] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload
     try {
       const { data } = await loginUser(form);
       login(data);
-
-
-      navigate("/");
+      navigate("/"); // Uncomment if you want to redirect after login
     } catch (err) {
+      console.log(err, "error");
       alert("Login failed!");
     }
   };
@@ -114,6 +127,15 @@ function Login() {
           >
             Login
           </button>
+          <button
+            type="button" // Important: prevents form submission
+            onClick={() => (window.location.href = "http://localhost:5000/auth/google")}
+            style={googleHover ? { ...styles.googleButton, ...styles.googleButtonHover } : styles.googleButton}
+            onMouseEnter={() => setGoogleHover(true)}
+            onMouseLeave={() => setGoogleHover(false)}
+          >
+            Login with Google
+          </button>
         </form>
         <div style={styles.footer}>
           Don’t have an account?{" "}
@@ -127,8 +149,3 @@ function Login() {
 }
 
 export default Login;
-
-
-
-
-
