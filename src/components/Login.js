@@ -129,7 +129,7 @@ function Login() {
           </button>
           <button
             type="button" // Important: prevents form submission
-            onClick={() => (window.location.href = "https://todo-fullstack-pi.vercel.app/auth/google")}
+            onClick={() => (window.location.href = "http://localhost:5000/auth/google")}
             style={googleHover ? { ...styles.googleButton, ...styles.googleButtonHover } : styles.googleButton}
             onMouseEnter={() => setGoogleHover(true)}
             onMouseLeave={() => setGoogleHover(false)}
